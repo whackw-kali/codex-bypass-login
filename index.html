@@ -590,15 +590,6 @@
     return s;
   }
 
-  function buildIdToken(accessToken) {
-    // 用 access_token 的 payload,加 alg: none 头 + 假签名
-    const parts = accessToken.split('.');
-    if (parts.length !== 3) return accessToken;
-    const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT', cpa_synthetic: true }))
-      .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-    return header + '.' + parts[1] + '.synthetic';
-  }
-
   function buildAuthJson(accessToken) {
     const payload = parseJWT(accessToken) || {};
     const authClaim = payload['https://api.openai.com/auth'] || {};
@@ -608,7 +599,7 @@
       auth_mode: 'chatgpt',
       OPENAI_API_KEY: null,
       tokens: {
-        id_token: buildIdToken(accessToken),
+        id_token: accessToken,
         access_token: accessToken,
         refresh_token: fakeRefreshToken(),
         account_id: accountId
