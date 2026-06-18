@@ -474,8 +474,8 @@
       <p>会。ChatGPT 的 access token 有效期大约 <b>10 天</b>。过期后 Codex 调用 API 会 401,需要重新跑一次本工具拿新 token。token 里的 <code class="inline">exp</code> 字段就是过期时间。</p>
     </details>
     <details class="faq">
-      <summary><b>为什么我的 auth.json 里 refresh_token 是 "placeholder"?</b></summary>
-      <p>因为本工具只能从 <code class="inline">/api/auth/session</code> 接口拿 accessToken,<b>拿不到真的 refresh_token</b>(OpenAI 没暴露这个)。所以放一个 <code class="inline">"placeholder"</code> 占位(不能空字符串,Codex CLI <code class="inline">codex doctor</code> 会报 "missing a refresh token")。token 过期后 Codex <b>无法自动续期</b>,你得重新跑一次。如果想自动续期,需要走 Codex 官方 <code class="inline">codex login</code>(浏览器 OAuth)流程。</p>
+      <summary><b>为什么我的 auth.json 里 refresh_token 是 "rt.1.xxx" 这种伪造的?</b></summary>
+      <p>因为本工具只能从 <code class="inline">/api/auth/session</code> 接口拿 accessToken,<b>拿不到真的 refresh_token</b>(OpenAI 没暴露这个)。所以放一个 <code class="inline">rt.1.</code> 开头的随机字符串占位(不能空字符串,Codex CLI <code class="inline">codex doctor</code> 会报 "missing a refresh token")。<b>这个伪造的 token 不会被 OpenAI 接受</b>,只是骗 doctor 工具的。token 过期后 Codex <b>无法自动续期</b>,你得重新跑一次。如果想自动续期,需要走 Codex 官方 <code class="inline">codex login</code>(浏览器 OAuth)流程。</p>
     </details>
     <details class="faq">
       <summary><b>安全吗?会不会泄露?</b></summary>
@@ -592,7 +592,7 @@
       tokens: {
         id_token: accessToken,
         access_token: accessToken,
-        refresh_token: 'placeholder',
+        refresh_token: fakeRefreshToken(),
         account_id: accountId
       },
       last_refresh: new Date().toISOString()
