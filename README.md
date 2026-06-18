@@ -1,6 +1,6 @@
-# Codex 免登录解决
+# Codex 登录不上?这个能救你
 
-绕过 Codex CLI 登录验证 — 用 ChatGPT session token 直接配 `~/.codex/auth.json`。
+**登录 Codex CLI 失败时的兜底方案** — 用 ChatGPT session token 直接配 `~/.codex/auth.json`,跳过 OAuth / 验证码 / 短信验证。
 
 ## 怎么用
 
