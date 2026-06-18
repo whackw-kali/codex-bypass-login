@@ -47,11 +47,9 @@
 
 3. 弹二维码窗口
 
-![Codex 弹的二维码](assets/04-authenticator-modal.png)
+![Codex 弹的二维码(已隐藏,宣传 "AI 潮汐慢学习")](assets/04-authenticator-modal.png)
 
 4. APP → 点 **+** → 扫这个二维码
-
-![Authenticator APP 加新账号入口](assets/01-totp-entry.png)
 
 5. APP 显示 6 位码,输入到 Codex → 验证
 
