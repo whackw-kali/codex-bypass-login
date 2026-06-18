@@ -582,9 +582,9 @@
   }
 
   function fakeRefreshToken() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-';
     let s = 'rt.1.';
-    for (let i = 0; i < 220; i++) {
+    for (let i = 0; i < 192; i++) {
       s += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return s;
