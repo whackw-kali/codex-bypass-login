@@ -14,7 +14,7 @@
 
 ## 方法 1:安全密钥 / 通行密钥 ⭐推荐
 
-最干净、一次配永久用、不需要手机。配 YubiKey / Touch ID / Windows Hello / iPhone 都可以。
+最干净、一次配永久用、不需要手机。**直接用本机自带**(Mac Touch ID / Windows Hello),不用买硬件。
 
 ### 怎么加
 
@@ -28,15 +28,22 @@
 
 ![安全密钥详情页,红框标出"添加"按钮](assets/02c-add-security-key.png)
 
-5. 按提示插入 YubiKey / 用 Touch ID / 用 iPhone / 用 Windows Hello
+5. 按提示用 Touch ID(Mac) / Windows Hello(Win) / iPhone 等验证
+
+> 💡 **不用买 YubiKey!** 用本机自带的就行:
+> - Mac: Touch ID(指纹)
+> - Windows: Windows Hello(人脸/指纹/PIN)
+> - iPhone / iPad: 也行(需 iCloud 钥匙串)
+>
+> 网页上"获取 YubiKey - 订购 YubiKey"是 OpenAI 推销的,直接忽略。
 
 ### 优点
 
 一次配好,以后登录 Codex CLI 系统提示用密钥验证,**不再需要短信**。
 
-### 缺点
+### 限制
 
-要硬件(YubiKey ¥200-500),或用本机的 Touch ID / Windows Hello(免费,但要在登录 Codex 的同一台设备上)。
+只能用登录 Codex 的同一台设备配(比如 Mac 配的就 Mac 用)。换电脑要重新配。
 
 ---
 
