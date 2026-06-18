@@ -123,15 +123,52 @@
     text-align: center;
   }
   figure img {
-    max-width: 100%;
+    max-width: 360px;
+    width: auto;
     height: auto;
     border: 1px solid var(--border);
     border-radius: 8px;
+    cursor: zoom-in;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  figure img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   }
   figcaption {
     color: var(--muted);
     font-size: 13px;
     margin-top: 6px;
+  }
+  /* Lightbox 全屏放大 */
+  .img-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+    cursor: zoom-out;
+  }
+  .img-modal.show { display: flex; }
+  .img-modal img {
+    max-width: 96vw;
+    max-height: 96vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .img-modal .hint {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    color: #ddd;
+    font-size: 13px;
+    background: rgba(0,0,0,0.4);
+    padding: 6px 12px;
+    border-radius: 6px;
   }
   footer {
     margin-top: 60px;
@@ -326,5 +363,31 @@
     本文档 100% 本地静态 HTML,可断网打开。所有截图嵌在 assets/ 目录。
   </footer>
 </div>
+
+<!-- Lightbox: 点击图片放大,点空白 / Esc 关闭 -->
+<div class="img-modal" id="imgModal">
+  <img alt="">
+  <div class="hint">点空白 / Esc 关闭</div>
+</div>
+
+<script>
+(function () {
+  var modal = document.getElementById('imgModal');
+  var modalImg = modal.querySelector('img');
+  document.querySelectorAll('figure img').forEach(function (img) {
+    img.addEventListener('click', function () {
+      modalImg.src = img.src;
+      modalImg.alt = img.alt;
+      modal.classList.add('show');
+    });
+  });
+  modal.addEventListener('click', function () {
+    modal.classList.remove('show');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') modal.classList.remove('show');
+  });
+})();
+</script>
 </body>
 </html>
