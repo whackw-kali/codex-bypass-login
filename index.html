@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Codex 免登录解决</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --panel: #f7f7f8;
+    --panel-2: #ececf1;
+    --border: #e5e7eb;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --accent: #10a37f;
+    --accent-hover: #0e906f;
+    --danger: #dc2626;
+    --warn: #d97706;
+    --code-bg: #f3f4f6;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  header h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    letter-spacing: -0.5px;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .step {
+    margin-top: 32px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .step-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .step-desc {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0 0 14px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--accent-hover); }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-ghost:hover { background: var(--panel-2); }
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 12px;
+    background: var(--code-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  textarea:focus { border-color: var(--accent); }
+  .tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tabs-spacer { flex: 1; }
+  .tab {
+    padding: 8px 14px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    font-family: inherit;
+  }
+  .tab.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+  .tab:hover { color: var(--text); }
+  .code-box {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .code-box pre {
+    margin: 0;
+    padding: 14px 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+    max-height: 380px;
+  }
+  .copy-btn {
+    padding: 5px 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    margin-bottom: 6px;
+    align-self: center;
+  }
+  .copy-btn:hover { color: var(--text); }
+  .copy-btn.ok { color: var(--accent); border-color: var(--accent); }
+  .row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .hint {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    color: #92400e;
+    font-size: 12.5px;
+  }
+  .err {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    color: #b91c1c;
+    font-size: 12.5px;
+    display: none;
+  }
+  .err.show { display: block; }
+  .empty {
+    color: var(--muted);
+    font-size: 13px;
+    padding: 20px;
+    text-align: center;
+  }
+  code.inline {
+    background: var(--panel-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+  }
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  footer a { color: var(--muted); }
+  .links-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+  }
+  .links-row .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .links-row .btn-ghost:hover {
+    background: var(--panel-2);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* === 顶部安全提示 === */
+  .notice-safe {
+    margin-top: 20px;
+    padding: 14px 18px;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-left: 4px solid #16a34a;
+    border-radius: 8px;
+    color: #14532d;
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+  .notice-safe .notice-title {
+    font-weight: 600;
+    color: #166534;
+    margin-bottom: 6px;
+  }
+  .notice-safe ul { margin: 6px 0 0; padding-left: 22px; }
+  .notice-safe li { margin-bottom: 2px; }
+  .notice-safe code.inline {
+    background: rgba(20, 83, 45, 0.08);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px;
+  }
+
+  /* === 顶部警告 === */
+  .notice {
+    margin-top: 20px;
+    padding: 14px 18px;
+    background: #fff7ed;
+    border: 1px solid #fdba74;
+    border-left: 4px solid #ea580c;
+    border-radius: 8px;
+    color: #7c2d12;
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+  .notice .notice-title {
+    font-weight: 600;
+    color: #9a3412;
+    margin-bottom: 4px;
+  }
+  .notice ul { margin: 6px 0 0; padding-left: 22px; }
+  .notice li { margin-bottom: 2px; }
+  .notice code.inline {
+    background: rgba(124, 45, 18, 0.08);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px;
+  }
+  .notice a { color: #9a3412; text-decoration: underline; }
+
+  /* === 原理/FAQ 折叠区 === */
+  .explainer, .faq {
+    margin-top: 8px;
+  }
+  .explainer summary, .faq summary {
+    cursor: pointer;
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: var(--text);
+    list-style: none;
+    user-select: none;
+  }
+  .explainer summary::-webkit-details-marker,
+  .faq summary::-webkit-details-marker { display: none; }
+  .explainer summary::before {
+    content: "▶";
+    display: inline-block;
+    margin-right: 8px;
+    color: var(--accent);
+    font-size: 11px;
+    transition: transform 0.15s;
+  }
+  .faq summary::before {
+    content: "Q";
+    display: inline-block;
+    margin-right: 8px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .explainer[open] summary::before { transform: rotate(90deg); }
+  .explainer summary:hover, .faq summary:hover { background: var(--border); }
+  .explainer-body, .faq p, .faq ul {
+    padding: 12px 14px 4px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .explainer-body ol { padding-left: 22px; }
+  .explainer-body li { margin-bottom: 10px; }
+  .explainer-body code.inline, .faq code.inline {
+    background: var(--panel-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px;
+  }
+  .explainer-body p a, .faq p a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <h1>Codex 免登录解决</h1>
+    <p>绕过验证码 / 短信验证,直接用 ChatGPT 账号配 Codex CLI</p>
+  </header>
+
+  <!-- 安全提示 -->
+  <div class="notice-safe">
+    ✅ <b>本地运行</b>,token 不外传(可断网验证)。觉得有用?给个 ⭐ 分享给朋友。
+  </div>
+
+  <!-- 重要提示:这不能一劳永逸 -->
+  <div class="notice">
+    ⚠️ <b>不是一劳永逸</b>:token 约 10 天过期,过期要重跑一遍。
+  </div>
+
+  <!-- Step 1 -->
+  <section class="step">
+    <div class="step-head">
+      <span class="step-num">1</span>
+      <span class="step-title">从浏览器拿到 token</span>
+    </div>
+    <p class="step-desc">
+      浏览器里你已经登录了 ChatGPT。<b>新开一个标签页</b>,点下面按钮打开一个 JSON 页面 —— 它就是你的登录身份。
+    </p>
+    <div class="row">
+      <a class="btn" href="https://chatgpt.com/api/auth/session" target="_blank" rel="noopener">
+        打开 Session 接口 ↗
+      </a>
+    </div>
+    <div class="hint">
+      <b>操作</b>:在打开的 JSON 页里按 <code class="inline">Ctrl + A</code>(Mac: <code class="inline">⌘ + A</code>)全选,再按 <code class="inline">Ctrl + C</code>(Mac: <code class="inline">⌘ + C</code>)复制。<br>
+      <b>看到啥</b>:一坨像这样的文字 <code class="inline">{"user":{...},"accessToken":"eyJ...","expires":"..."}</code>。看着吓人没关系,整段粘过来就行。
+    </div>
+  </section>
+
+  <!-- Step 2 -->
+  <section class="step">
+    <div class="step-head">
+      <span class="step-num">2</span>
+      <span class="step-title">粘贴 Session JSON 或 Access Token</span>
+    </div>
+    <textarea id="input" placeholder='粘贴整段 JSON,例如:&#10;{&#10;  "user": {...},&#10;  "accessToken": "eyJhbGciOiJSUzI1NiIs...",&#10;  "expires": "2026-...",&#10;  ...&#10;}&#10;&#10;或仅粘贴 accessToken 字符串。'></textarea>
+    <div class="err" id="err"></div>
+  </section>
+
+  <!-- Step 3 -->
+  <section class="step">
+    <div class="step-head">
+      <span class="step-num">3</span>
+      <span class="step-title">复制命令,粘到终端里跑</span>
+    </div>
+    <p class="step-desc">
+      上方粘好 token 后,下面会自动生成命令。点 <b>复制</b> 按钮,再打开终端(Mac: <code class="inline">启动台 → 实用工具 → 终端</code>;Windows: 开始菜单搜 <code class="inline">PowerShell</code>),把命令粘进去按 <b>回车</b>。
+    </p>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="powershell">Windows PowerShell</button>
+      <button class="tab" data-tab="linux">Linux Bash</button>
+      <button class="tab" data-tab="macos">macOS Bash</button>
+      <span class="tabs-spacer"></span>
+      <button class="copy-btn" id="copyBtn">复制</button>
+    </div>
+
+    <div class="code-box">
+      <pre id="output"><span class="empty" style="display:block">先在上方粘贴 token,命令会自动生成</span></pre>
+    </div>
+
+    <!-- AI 一键跑 -->
+    <details class="ai-run" id="aiRunBox" style="margin-top: 12px;">
+      <summary>📤 不想手动跑命令?点这里生成一段"给 AI 的指令"</summary>
+      <div style="padding: 10px 0 0;">
+        <p class="muted-small" style="margin-top:0;">点下面"生成"按钮,会生成一段指令。把它复制下来发给 AI(比如 Claude Code / Codex),AI 会自己跑命令、验证、报结果,不用你去开终端。</p>
+        <div class="row">
+          <button class="btn" id="genAiBtn" style="font-size: 13px; padding: 7px 14px;">生成 AI 指令</button>
+          <button class="copy-btn" id="copyAiBtn" style="font-size: 12px;">复制</button>
+        </div>
+        <div class="code-box" style="margin-top: 10px;">
+          <pre id="aiOutput"><span class="empty" style="display:block">先在上面粘 token + 选平台,再点"生成"</span></pre>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- AI 模式已合并到 Step 3 内,见上方 -->
+
+  <div class="links-row">
+    <a class="btn-ghost" href="https://github.com/whackw-kali" target="_blank" rel="noopener">🐙 GitHub 主页</a>
+  </div>
+
+  <!-- 原理说明 -->
+  <section class="step" style="margin-top: 40px;">
+    <div class="step-head">
+      <span class="step-num" style="background: var(--muted);">?</span>
+      <span class="step-title">原理说明(可看可不看)</span>
+    </div>
+    <details class="explainer">
+      <summary>展开看原理 ↓</summary>
+      <div class="explainer-body">
+        <p><b>一句话</b>:本工具做的事等价于 Codex CLI 官方的 <code class="inline">codex login --with-access-token</code> 命令(见 <a href="https://developers.openai.com/codex/cli/reference" target="_blank" rel="noopener">OpenAI 官方文档</a>),只是把它做成了网页版。</p>
+        <ol>
+          <li><b>ChatGPT 是怎么登录的</b>:你在浏览器里手动登录,经过密码 + 验证码 + 2FA 等,OpenAI 会颁发一个 <b>access token</b>(JWT 格式,带签名 + 有效期 + 权限)给浏览器。浏览器把 token 存到 cookie 里,后续每次请求都会带上。</li>
+          <li><b>这个 token 是什么</b>:它本质是<b>你的身份证明</b>。只要没过期,任何持有这个 token 的程序都可以用你的身份调用 OpenAI API。JWT 是 OAuth 2.0 标准,OpenAI 服务器端每次 API 请求都会验签 + 查有效期 + 查权限。</li>
+          <li><b>本工具做的事</b>:浏览器地址 <code class="inline">chatgpt.com/api/auth/session</code> 会返回当前会话的 token JSON。本工具读这个 JSON → 抽出 accessToken → 包成 Codex CLI 认识的 <code class="inline">~/.codex/auth.json</code> 格式 → 给你生成写入命令。</li>
+          <li><b>"免验证码"是免在哪</b>:验证码是 ChatGPT 登录流程里防机器人用的;你<b>已经手动登录过了</b>,拿到的 token 就是合法身份。Codex 拿到这个 token 后调用 API,OpenAI 那边只认 token 不认"是不是浏览器",所以不需要再走 OAuth 流程。</li>
+          <li><b>安全保证</b>:整个过程在你浏览器本地完成,token 不会上传到任何服务器(本工具是纯前端 HTML,没有后端)。</li>
+        </ol>
+        <p class="muted-small">出处:<a href="https://github.com/openai/codex/blob/main/codex-rs/login/src/auth/storage.rs" target="_blank" rel="noopener">openai/codex 源码 auth/storage.rs</a> · <a href="https://developers.openai.com/codex/auth" target="_blank" rel="noopener">Codex 官方认证文档</a></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- FAQ -->
+  <section class="step" style="margin-top: 24px;">
+    <div class="step-head">
+      <span class="step-num" style="background: var(--muted);">?</span>
+      <span class="step-title">常见问题</span>
+    </div>
+    <details class="faq">
+      <summary><b>token 会过期吗?</b></summary>
+      <p>会。ChatGPT 的 access token 有效期大约 <b>10 天</b>。过期后 Codex 调用 API 会 401,需要重新跑一次本工具拿新 token。token 里的 <code class="inline">exp</code> 字段就是过期时间。</p>
+    </details>
+    <details class="faq">
+      <summary><b>为什么我的 auth.json 里 refresh_token 是空的?</b></summary>
+      <p>因为本工具只能从 <code class="inline">/api/auth/session</code> 接口拿 accessToken,<b>拿不到 refresh_token</b>(OpenAI 没暴露这个)。所以 token 过期后 Codex <b>无法自动续期</b>,你得重新跑一次。如果想自动续期,需要走 Codex 官方 <code class="inline">codex login</code>(浏览器 OAuth)流程。</p>
+    </details>
+    <details class="faq">
+      <summary><b>安全吗?会不会泄露?</b></summary>
+      <p>本工具是纯前端,数据不离开你的浏览器。但 <b>token 本身</b>是敏感信息 —— 任何拿到这个 token 的人(到过期为止)都能以你身份调用 OpenAI API。不要发到公网(GitHub、Discord、博客等),不要截图发群里。本地存也建议 <code class="inline">chmod 600 ~/.codex/auth.json</code>。</p>
+    </details>
+    <details class="faq">
+      <summary><b>为什么不直接用 <code>codex login</code> ?</summary>
+      <p>官方 <code class="inline">codex login</code> 要打开浏览器走 OAuth 回调。在以下场景会失败:
+        <ul>
+          <li>无 GUI 的服务器 / SSH 远程</li>
+          <li>浏览器 localhost 回调被防火墙拦了</li>
+          <li>自动化脚本 / CI/CD runner</li>
+          <li>不想每次重新登录(token 还可以用)</li>
+        </ul>
+        本工具就是给这些场景准备的等价方案。
+      </p>
+    </details>
+    <details class="faq">
+      <summary><b>为什么不用 API key?有 API key 不就行了?</b></summary>
+      <p>API key 是 OpenAI 开发者付费,按 token 用量扣钱,跟 ChatGPT Plus 月费订阅是<b>两套独立计费</b>。如果你已经有 ChatGPT Plus/Pro/Team 订阅,用本工具能直接复用订阅额度,不用另外充值 API 余额。</p>
+    </details>
+    <details class="faq">
+      <summary><b>可以把这个 auth.json 复制给朋友用吗?</b></summary>
+      <p>技术上能跑,但 <b>不建议</b>。原因:
+        <ul>
+          <li>refresh_token 是单次使用,谁先刷谁生效,其他人会突然登出</li>
+          <li>从 OpenAI 服务条款看,分享账号凭证属于违规</li>
+          <li>token 泄露后无法远程撤销(只能等 10 天过期)</li>
+        </ul>
+      </p>
+    </details>
+  </section>
+
+  <footer>
+  </footer>
+</div>
+
+<script>
+// ===== Main App =====
+(function () {
+  const input = document.getElementById('input');
+  const output = document.getElementById('output');
+  const err = document.getElementById('err');
+  const copyBtn = document.getElementById('copyBtn');
+  const tabs = document.querySelectorAll('.tab');
+
+  let currentPlatform = 'powershell';
+  let currentCommand = '';
+
+  function showErr(msg) {
+    err.textContent = msg;
+    err.classList.add('show');
+  }
+  function clearErr() {
+    err.textContent = '';
+    err.classList.remove('show');
+  }
+
+  // Base64URL decode (for JWT)
+  function b64urlDecode(str) {
+    str = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (str.length % 4) str += '=';
+    try {
+      return decodeURIComponent(
+        atob(str).split('').map(c =>
+          '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join('')
+      );
+    } catch (e) {
+      return atob(str);
+    }
+  }
+
+  function parseJWT(token) {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    try {
+      return JSON.parse(b64urlDecode(parts[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function extractToken(raw) {
+    const text = raw.trim();
+    if (!text) return null;
+
+    // 尝试解析 JSON
+    if (text.startsWith('{')) {
+      try {
+        const obj = JSON.parse(text);
+        if (typeof obj.accessToken === 'string') return obj.accessToken;
+        if (obj.tokens && typeof obj.tokens.access_token === 'string') return obj.tokens.access_token;
+        if (typeof obj.access_token === 'string') return obj.access_token;
+        throw new Error('JSON 中未找到 accessToken 字段');
+      } catch (e) {
+        throw new Error('JSON 解析失败: ' + e.message);
+      }
+    }
+
+    // 当作纯 token 字符串
+    if (text.split('.').length === 3) return text;
+    throw new Error('无法识别的输入。请粘贴 Session JSON 或 JWT 字符串。');
+  }
+
+  function buildAuthJson(accessToken) {
+    const payload = parseJWT(accessToken) || {};
+    const authClaim = payload['https://api.openai.com/auth'] || {};
+    const accountId = authClaim.chatgpt_account_id || authClaim.user_id || '';
+
+    return {
+      auth_mode: 'chatgpt',
+      OPENAI_API_KEY: null,
+      tokens: {
+        id_token: accessToken,
+        access_token: accessToken,
+        refresh_token: '',
+        account_id: accountId
+      },
+      last_refresh: new Date().toISOString()
+    };
+  }
+
+  function genPowerShell(authObj) {
+    const json = JSON.stringify(authObj, null, 2);
+    return `# Codex 凭证写入 (Windows PowerShell · 兼容 5.1 / 7+)
+$dir = Join-Path $HOME ".codex"
+New-Item -ItemType Directory -Force -Path $dir | Out-Null
+$json = @'
+${json}
+'@
+# 用 .NET API 强制写入无 BOM 的 UTF-8(PS 5.1 的 -Encoding UTF8 会带 BOM,导致 codex 报 "expected value at line 1 column 1")
+[System.IO.File]::WriteAllText((Join-Path $dir "auth.json"), $json, (New-Object System.Text.UTF8Encoding $false))`;
+  }
+
+  function genBash(authObj, comment) {
+    const json = JSON.stringify(authObj, null, 2);
+    return `# ${comment}
+mkdir -p ~/.codex
+cat > ~/.codex/auth.json <<'EOF'
+${json}
+EOF
+echo "[OK] 已写入 ~/.codex/auth.json"`;
+  }
+
+  function render() {
+    clearErr();
+    const raw = input.value;
+    if (!raw.trim()) {
+      output.innerHTML = '<span class="empty" style="display:block">先在上方粘贴 token,命令会自动生成</span>';
+      currentCommand = '';
+      return;
+    }
+
+    let token;
+    try {
+      token = extractToken(raw);
+    } catch (e) {
+      showErr(e.message);
+      output.innerHTML = '<span class="empty" style="display:block">解析失败,请检查输入</span>';
+      currentCommand = '';
+      return;
+    }
+
+    if (!token) {
+      output.innerHTML = '<span class="empty" style="display:block">未找到 token</span>';
+      currentCommand = '';
+      return;
+    }
+
+    const authObj = buildAuthJson(token);
+
+    let cmd;
+    if (currentPlatform === 'powershell') cmd = genPowerShell(authObj);
+    else if (currentPlatform === 'linux') cmd = genBash(authObj, 'Codex 凭证写入 (Linux Bash)');
+    else cmd = genBash(authObj, 'Codex 凭证写入 (macOS Bash)');
+
+    currentCommand = cmd;
+    output.textContent = cmd;
+  }
+
+  input.addEventListener('input', render);
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentPlatform = tab.dataset.tab;
+      render();
+    });
+  });
+
+  copyBtn.addEventListener('click', async () => {
+    if (!currentCommand) return;
+    try {
+      await navigator.clipboard.writeText(currentCommand);
+      copyBtn.textContent = '已复制';
+      copyBtn.classList.add('ok');
+      setTimeout(() => {
+        copyBtn.textContent = '复制';
+        copyBtn.classList.remove('ok');
+      }, 1500);
+    } catch (e) {
+      // fallback
+      const range = document.createRange();
+      range.selectNodeContents(output);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('copy');
+      sel.removeAllRanges();
+      copyBtn.textContent = '已复制';
+      setTimeout(() => { copyBtn.textContent = '复制'; }, 1500);
+    }
+  });
+
+  // 一键生成"给 AI 跑的指令" + 复制
+  const aiOutput = document.getElementById('aiOutput');
+  const genAiBtn = document.getElementById('genAiBtn');
+  const copyAiBtn = document.getElementById('copyAiBtn');
+  const aiRunBox = document.getElementById('aiRunBox');
+
+  function buildAiPrompt(cmd, platform) {
+    const target = platform === 'powershell'
+      ? '%USERPROFILE%\\.codex\\auth.json'
+      : '~/.codex/auth.json';
+    return '目标:把这段 JSON 写到 `' + target + '`,让 Codex CLI 认账。' +
+      '下面命令是自动生成的,如果在你的平台跑不通(语法/路径/编码问题),自己重新生成一个能写的等价命令。\n\n```\n' + cmd + '\n```\n\n' +
+      '跑完跑 `codex --version` 和 `codex login status` 确认能用。\n' +
+      '注意:accessToken / id_token 字段值用 *** 遮掉别贴出来。';
+  }
+
+  if (genAiBtn) {
+    genAiBtn.addEventListener('click', () => {
+      if (!currentCommand) {
+        aiOutput.textContent = '⚠️ 请先在 Step 2 粘贴 token,选好平台';
+        return;
+      }
+      aiOutput.textContent = buildAiPrompt(currentCommand, currentPlatform);
+      if (aiRunBox && !aiRunBox.open) aiRunBox.open = true;
+    });
+  }
+
+  if (copyAiBtn) {
+    copyAiBtn.addEventListener('click', async () => {
+      const text = aiOutput.textContent;
+      if (!text || text.indexOf('先在上面') === 0 || text.indexOf('⚠️') === 0) return;
+      const original = copyAiBtn.textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        copyAiBtn.textContent = '已复制 ✓';
+        copyAiBtn.classList.add('ok');
+        setTimeout(() => {
+          copyAiBtn.textContent = original;
+          copyAiBtn.classList.remove('ok');
+        }, 1500);
+      } catch (e) {
+        const range = document.createRange();
+        range.selectNodeContents(aiOutput);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand('copy');
+        sel.removeAllRanges();
+        copyAiBtn.textContent = '已复制 ✓';
+        setTimeout(() => { copyAiBtn.textContent = original; }, 1500);
+      }
+    });
+  }
+})();
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4ba181983aaa4f8abf1a5be52e800518","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
+
