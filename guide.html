@@ -213,14 +213,13 @@
 
   <figure>
     <img src="assets/02-account-security.png" alt="账户安全与登录 - 安全密钥和通行密钥入口(红框标出)">
-    <figcaption>图:账户安全与登录页,红框圈出 <b>安全密钥和通行密钥</b>(点这个进去添加 YubiKey / Passkey)</figcaption>
+    <figcaption>图:账户安全与登录页,红框圈出 <b>安全密钥和通行密钥</b>(点这个进去)</figcaption>
   </figure>
 
-  <h3>优点 vs 缺点</h3>
-  <ul>
-    <li>✅ <b>优点</b>:不需要手机 / APP / 验证码;最安全(物理设备 + FIDO2)</li>
-    <li>❌ <b>缺点</b>:需要买硬件(YubiKey 大概 ¥200-500);或者用设备 Touch ID / Windows Hello(免费但要在登录 Codex 的同一台设备上)</li>
-  </ul>
+  <figure>
+    <img src="assets/02c-add-security-key.png" alt="安全密钥和通行密钥详情页 - 添加按钮(红框标出)">
+    <figcaption>图:进入"安全密钥和通行密钥"页,红框圈出 <b>添加安全密钥或通行密钥</b> 按钮(点这个开始添加,按提示插入 YubiKey / 用 Touch ID 等)</figcaption>
+  </figure>
 
   <h2 id="m2">方法 2:Authenticator APP(Google / Microsoft)</h2>
   <div class="rec-card">
@@ -268,11 +267,6 @@
     <figcaption>图:Google Authenticator 扫完二维码后,显示 OpenAI 账号对应的 6 位码(628 805,30 秒变一次)</figcaption>
   </figure>
 
-  <h3>优点 vs 缺点</h3>
-  <ul>
-    <li>✅ <b>优点</b>:免费、主流(几乎所有网站都支持)、不依赖手机信号(APP 离线算 6 位码)</li>
-    <li>❌ <b>缺点</b>:需要装 APP(Google/MS 国内可能需科学上网);换手机要迁移;每 30 秒要输入新码</li>
-  </ul>
 
   <h2 id="m3">方法 3:绕过登录(本仓库工具,兜底)</h2>
   <div class="last-card">
