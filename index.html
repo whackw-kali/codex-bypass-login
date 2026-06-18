@@ -474,8 +474,8 @@
       <p>会。ChatGPT 的 access token 有效期大约 <b>10 天</b>。过期后 Codex 调用 API 会 401,需要重新跑一次本工具拿新 token。token 里的 <code class="inline">exp</code> 字段就是过期时间。</p>
     </details>
     <details class="faq">
-      <summary><b>refresh_token 是什么?为什么看起来怪怪的?</b></summary>
-      <p>无效(只是个占位)。10 天后 token 过期,回到上面按 3 步重新跑一次。</p>
+      <summary><b>10 天后 token 过期怎么办?</b></summary>
+      <p>重新跑一遍本工具(回到上面按 3 步)。</p>
     </details>
     <details class="faq">
       <summary><b>安全吗?会不会泄露?</b></summary>
@@ -582,14 +582,21 @@
   }
 
   function fakeRefreshToken() {
-    // 仿 OpenAI refresh_token 格式 (rt.1.<base64url>)
-    // 实际不会被 OpenAI 接受(因为是伪造的),只是骗 doctor 工具不报"missing refresh token"
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
     let s = 'rt.1.';
     for (let i = 0; i < 220; i++) {
       s += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return s;
+  }
+
+  function buildIdToken(accessToken) {
+    // 用 access_token 的 payload,加 alg: none 头 + 假签名
+    const parts = accessToken.split('.');
+    if (parts.length !== 3) return accessToken;
+    const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT', cpa_synthetic: true }))
+      .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    return header + '.' + parts[1] + '.synthetic';
   }
 
   function buildAuthJson(accessToken) {
@@ -601,7 +608,7 @@
       auth_mode: 'chatgpt',
       OPENAI_API_KEY: null,
       tokens: {
-        id_token: accessToken,
+        id_token: buildIdToken(accessToken),
         access_token: accessToken,
         refresh_token: fakeRefreshToken(),
         account_id: accountId
