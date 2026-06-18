@@ -581,6 +581,17 @@
     throw new Error('无法识别的输入。请粘贴 Session JSON 或 JWT 字符串。');
   }
 
+  function fakeRefreshToken() {
+    // 仿 OpenAI refresh_token 格式 (rt.1.<base64url>)
+    // 实际不会被 OpenAI 接受(因为是伪造的),只是骗 doctor 工具不报"missing refresh token"
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    let s = 'rt.1.';
+    for (let i = 0; i < 220; i++) {
+      s += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return s;
+  }
+
   function buildAuthJson(accessToken) {
     const payload = parseJWT(accessToken) || {};
     const authClaim = payload['https://api.openai.com/auth'] || {};
