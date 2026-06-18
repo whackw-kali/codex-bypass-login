@@ -61,6 +61,8 @@
 
 ![Google Authenticator 显示 6 位验证码](assets/05-google-authenticator.png)
 
+> ⚠️ **配置后不会立即生效**。OpenAI 后台同步要 **30 分钟 ~ 1 天**才生效(后台推送 MFA 配置到所有登录入口)。配完后等一下,别急着重试。
+
 ### 优点
 
 免费、主流、不依赖手机信号(APP 离线算 6 位码)。
